@@ -1,69 +1,89 @@
-import Image from "next/image";
+"use client";
+
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+
+import VehicleHero from "@/components/hero/VehicleHero";
+import CategoryExplorer from "@/components/sections/CategoryExplorer";
+import { FeaturedInventory } from "@/components/sections/FeaturedInventory";
+import PlanYourDrive from "@/components/sections/PlanYourDrive";
+import ReserveExperience from "@/components/sections/ReserveExperience";
+import WhyUs from "@/components/sections/WhyUs";
 
 export default function Home() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const whyUsRef = useRef<HTMLDivElement>(null);
+  const planRef = useRef<HTMLDivElement>(null);
+
+  // 1. Single scroll target for the curtain reveal stage
+  const { scrollYProgress } = useScroll({
+    target: stageRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Hero lifts up (-100%) cleanly over the scroll range
+  const heroY = useTransform(
+    scrollYProgress,
+    [0, 0.55, 1],
+    ["0%", "-100%", "-100%"]
+  );
+
+  // Featured inventory background subtle scale & focus as hero lifts
+  const featuredScale = useTransform(scrollYProgress, [0, 0.55], [0.95, 1]);
+  const featuredOpacity = useTransform(scrollYProgress, [0, 0.2, 0.55], [0.4, 0.8, 1]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="relative w-full bg-[#0B0B0C]">
+      {/* 
+        1. CURTAIN REVEAL STAGE (HERO -> FEATURED INVENTORY)
+        250vh scroll area where the hero lifts upward
+        and reveals Featured Inventory underneath.
+      */}
+      <div ref={stageRef} className="relative h-[250vh] w-full">
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          {/* FEATURED INVENTORY: Background Layer with subtle zoom */}
+          <motion.div
+            style={{ scale: featuredScale, opacity: featuredOpacity }}
+            className="relative z-10 h-full w-full will-change-transform"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <FeaturedInventory />
+          </motion.div>
+
+          {/* VEHICLE HERO: Sliding curtain layer */}
+          <motion.div
+            style={{ y: heroY }}
+            className="fixed inset-0 z-20 h-screen w-full shadow-[0_30px_60px_rgba(0,0,0,0.8)] will-change-transform"
           >
-            Documentation
-          </a>
+            <VehicleHero />
+          </motion.div>
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* 
+        2. NATURAL CINEMATIC SCROLL FLOW
+        Each section has customized scroll parallax and in-view depth reveals
+      */}
+      <div className="relative z-30 w-full bg-background shadow-[0_-30px_60px_rgba(0,0,0,0.5)]">
+        {/* Category Explorer */}
+        <section id="category-explorer" className="relative w-full">
+          <CategoryExplorer />
+        </section>
+
+        {/* Why Us with Parallax Layer */}
+        <section id="why-us" ref={whyUsRef} className="relative w-full">
+          <WhyUs />
+        </section>
+
+        {/* Plan Your Drive */}
+        <section id="plan-drive" ref={planRef} className="relative w-full">
+          <PlanYourDrive />
+        </section>
+
+        {/* Reserve Experience */}
+        <section id="reserve" className="relative w-full">
+          <ReserveExperience />
+        </section>
+      </div>
+    </main>
   );
 }
