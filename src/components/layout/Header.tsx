@@ -10,13 +10,8 @@ export function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 60);
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
@@ -26,10 +21,10 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-out ${
         isHome && !isScrolled
           ? "bg-transparent border-b border-transparent"
-          : "border-b border-white/10 bg-[#070708]/90 backdrop-blur-md shadow-2xl"
+          : "border-b border-[#1B222B]/60 bg-[#080A0D]/80 backdrop-blur-xl"
       }`}
     >
       <Navbar />

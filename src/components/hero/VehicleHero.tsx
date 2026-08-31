@@ -2,204 +2,172 @@
 
 import { vehicles } from "@/data/vehicles";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const customImage = "";
-const customTitle = "";
-const customDescription = "";
+// Use the BMW M8 Gran Coupe as the primary hero vehicle
+const heroVehicle = vehicles.find((v) => v.id === "bmw-m8-gran-coupe") || vehicles[0];
 
 export default function VehicleHero() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const vehicle = vehicles[activeIndex];
-  const hasVideo = Boolean(vehicle?.videoUrl && vehicle.videoUrl.trim() !== "");
-
-  const activeImage = customImage || vehicle?.heroImage;
-  const activeTitle = customTitle || (vehicle ? `THE ${vehicle.model}` : "");
-  const activeDescription = customDescription || vehicle?.description;
-
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % vehicles.length);
-  };
-
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + vehicles.length) % vehicles.length);
-  };
-
-  // 6-second automatic slideshow timer
   useEffect(() => {
-    if (isVideoOpen) return;
-
-    const timer = setInterval(() => {
-      handleNext();
-    }, 6000);
-
-    return () => clearInterval(timer);
-  }, [activeIndex, isVideoOpen]);
-
-  if (!vehicle) return null;
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-[#0B0B0C] text-white select-none">
-      {/* 1. Dynamic Responsive Background Image */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={vehicle.id}
-          initial={{ opacity: 0, scale: 1.02 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="absolute inset-0 z-0"
-        >
-          {/* Mobile Image */}
-          {!customImage && vehicle.mobileHeroImage ? (
-            <div className="relative h-full w-full md:hidden">
-              <Image
-                src={vehicle.mobileHeroImage}
-                alt={`${vehicle.make} ${vehicle.model}`}
-                fill
-                priority
-                className="object-cover object-center"
-              />
-            </div>
-          ) : null}
-
-          {/* Main Hero Image */}
-          <div
-            className={`relative h-full w-full ${
-              !customImage && vehicle.mobileHeroImage ? "hidden md:block" : "block"
-            }`}
-          >
-            <Image
-              src={activeImage}
-              alt={`${vehicle.make} ${vehicle.model}`}
-              fill
-              priority
-              className="object-cover object-center"
-            />
-          </div>
-
-          {/* Subtle Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/50" />
-        </motion.div>
-      </AnimatePresence>
-
-      {/* 2. Desktop Arrow Controls */}
-      <button
-        onClick={handlePrev}
-        aria-label="Previous Slide"
-        className="absolute left-6 top-1/2 z-30 hidden -translate-y-1/2 p-3 text-white/50 transition-all hover:text-white hover:scale-110 md:block rounded-full bg-black/30 backdrop-blur-sm border border-white/10"
+    <section className="relative h-screen w-full overflow-hidden bg-[#080A0D] text-white select-none">
+      {/* Background Vehicle Image */}
+      <motion.div
+        initial={{ scale: 1.08, opacity: 0 }}
+        animate={isLoaded ? { scale: 1, opacity: 1 } : {}}
+        transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute inset-0 z-0"
       >
-        <ChevronLeft className="h-6 w-6" />
-      </button>
+        <Image
+          src={heroVehicle.heroImage}
+          alt={`${heroVehicle.make} ${heroVehicle.model}`}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+          onLoad={() => setIsLoaded(true)}
+        />
+        {/* Cinematic overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080A0D] via-[#080A0D]/30 to-[#080A0D]/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080A0D]/40 via-transparent to-[#080A0D]/40" />
+      </motion.div>
 
-      <button
-        onClick={handleNext}
-        aria-label="Next Slide"
-        className="absolute right-6 top-1/2 z-30 hidden -translate-y-1/2 p-3 text-white/50 transition-all hover:text-white hover:scale-110 md:block rounded-full bg-black/30 backdrop-blur-sm border border-white/10"
-      >
-        <ChevronRight className="h-6 w-6" />
-      </button>
+      {/* Subtle blue atmospheric glow behind vehicle */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[50%] bg-[radial-gradient(ellipse_at_center,rgba(77,163,255,0.06),transparent_70%)] pointer-events-none z-[1]" />
 
-      {/* 3. Dynamic Typography & Action Button */}
-      <div className="relative z-20 flex h-full flex-col items-center justify-center px-6 text-center">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={vehicle.id}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.4 }}
-            className="flex flex-col items-center max-w-3xl pt-12"
-          >
-            <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-[#d4af37] mb-2">
-              {vehicle.year} • {vehicle.make}
-            </span>
+      {/* Content Layer */}
+      <div className="relative z-10 flex h-full flex-col justify-between px-6 md:px-14 py-8">
+        {/* Top Brand Badge */}
+        <AnimatePresence>
+          {isLoaded && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+              className="flex items-center justify-center pt-16"
+            >
+              <span className="text-[10px] tracking-[0.5em] uppercase text-foreground-secondary/60">
+                MSYNTRA AUTOMOTIVE
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-            <h1 className="mb-3 text-3xl font-light tracking-[0.2em] uppercase text-white sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
-              {activeTitle}
-            </h1>
-
-            <p className="mb-6 max-w-lg text-xs font-light tracking-wide text-zinc-300 sm:text-sm">
-              {activeDescription}
-            </p>
-
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href={`/catalog/${vehicle.id}`}
-                className="rounded-full bg-white px-6 py-2.5 text-[11px] font-mono tracking-[0.2em] uppercase text-black font-medium transition-all hover:bg-[#d4af37] hover:scale-105 shadow-xl"
+        {/* Center — Main Title */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center -mt-8">
+          <AnimatePresence>
+            {isLoaded && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex flex-col items-center max-w-4xl"
               >
-                EXPLORE MODEL
-              </Link>
-
-              <Link
-                href="/inventory"
-                className="rounded-full border border-white/30 bg-black/40 px-6 py-2.5 text-[11px] font-mono tracking-[0.2em] uppercase text-white backdrop-blur-sm transition-all hover:border-white hover:bg-white/10"
-              >
-                VIEW FLEET
-              </Link>
-
-              {hasVideo && (
-                <button
-                  onClick={() => setIsVideoOpen(true)}
-                  className="flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-5 py-2.5 text-[11px] font-mono tracking-[0.2em] uppercase text-zinc-300 backdrop-blur-sm transition hover:border-white hover:text-white"
+                {/* Title */}
+                <motion.h1
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extralight tracking-[0.15em] uppercase text-foreground leading-[0.95]"
                 >
-                  <Play className="h-3 w-3 fill-current text-[#d4af37]" />
-                  <span>PLAY VIDEO</span>
-                </button>
-              )}
-            </div>
-          </motion.div>
+                  THE FUTURE
+                  <br />
+                  <span className="font-light">OF MOTION.</span>
+                </motion.h1>
+
+                {/* Vehicle Info */}
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.9, ease: "easeOut" }}
+                  className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[10px] tracking-[0.3em] uppercase text-foreground-secondary/70"
+                >
+                  <span>{heroVehicle.make} {heroVehicle.model}</span>
+                  <span className="hidden sm:inline text-accent/50">—</span>
+                  <span className="text-accent">{heroVehicle.powerSpec}</span>
+                  <span className="hidden sm:inline text-accent/50">—</span>
+                  <span>{heroVehicle.engineSpec}</span>
+                </motion.div>
+
+                {/* CTA */}
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
+                  className="mt-10 flex flex-wrap items-center justify-center gap-4"
+                >
+                  <Link
+                    href={`/catalog/${heroVehicle.id}`}
+                    className="group inline-flex items-center gap-3 border border-foreground/20 px-8 py-3 text-[10px] tracking-[0.25em] uppercase text-foreground transition-all duration-500 hover:border-accent hover:bg-accent/5"
+                  >
+                    EXPLORE VEHICLE
+                    <span className="text-accent transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </Link>
+                  <Link
+                    href="/catalog"
+                    className="inline-flex items-center gap-2 px-8 py-3 text-[10px] tracking-[0.25em] uppercase text-foreground-secondary transition-colors duration-300 hover:text-foreground"
+                  >
+                    VIEW COLLECTION
+                  </Link>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Bottom — Scroll Indicator & Technical Spec */}
+        <AnimatePresence>
+          {isLoaded && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.6 }}
+              className="flex items-end justify-between pb-2"
+            >
+              {/* Scroll indicator */}
+              <div className="flex flex-col items-center gap-2">
+                <motion.div
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-[1px] h-8 bg-gradient-to-b from-transparent via-foreground-secondary/40 to-foreground-secondary/40"
+                />
+                <span className="text-[9px] tracking-[0.3em] uppercase text-foreground-muted">
+                  SCROLL
+                </span>
+              </div>
+
+              {/* Right specs */}
+              <div className="hidden md:flex items-center gap-8 text-[10px] tracking-[0.2em] text-foreground-muted">
+                <div className="text-right">
+                  <div className="text-foreground-secondary/40 text-[9px]">0—100 KM/H</div>
+                  <div className="text-foreground mt-0.5">3.2 SEC</div>
+                </div>
+                <div className="w-[1px] h-6 bg-[#1B222B]" />
+                <div className="text-right">
+                  <div className="text-foreground-secondary/40 text-[9px]">TOP SPEED</div>
+                  <div className="text-foreground mt-0.5">305 KM/H</div>
+                </div>
+                <div className="w-[1px] h-6 bg-[#1B222B]" />
+                <div className="text-right">
+                  <div className="text-foreground-secondary/40 text-[9px]">OUTPUT</div>
+                  <div className="text-accent mt-0.5">{heroVehicle.powerSpec}</div>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
-      {/* 4. Dynamic Clickable Pagination Bar */}
-      <div className="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2">
-        {vehicles.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setActiveIndex(idx)}
-            aria-label={`Go to slide ${idx + 1}`}
-            className={`h-1.5 transition-all duration-300 rounded-full ${
-              activeIndex === idx
-                ? "w-8 bg-[#d4af37]"
-                : "w-2.5 bg-white/30 hover:bg-white/60"
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* 5. Video Lightbox Modal */}
-      <AnimatePresence>
-        {isVideoOpen && hasVideo && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 backdrop-blur-md md:p-12"
-          >
-            <button
-              onClick={() => setIsVideoOpen(false)}
-              className="absolute top-6 right-6 text-white/70 hover:text-white"
-            >
-              <X className="h-8 w-8" />
-            </button>
-            <div className="relative aspect-video w-full max-w-5xl overflow-hidden rounded-md border border-white/10 bg-black">
-              <iframe
-                src={vehicle.videoUrl}
-                title={`${vehicle.make} ${vehicle.model}`}
-                className="h-full w-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Grain overlay */}
+      <div className="grain absolute inset-0 pointer-events-none z-20" />
     </section>
   );
 }

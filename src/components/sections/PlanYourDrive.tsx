@@ -145,7 +145,7 @@ export default function PlanYourDrive() {
         <div className="flex items-center space-x-6 mt-6 md:mt-0">
           <button
             onClick={handlePrevVehicle}
-            className="w-10 h-10 rounded-full border border-zinc-800 bg-black/40 backdrop-blur-md flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
+            className="w-10 h-10 rounded-full border border-[#1B222B] bg-background/40 backdrop-blur-md flex items-center justify-center text-foreground-muted hover:text-foreground hover:border-foreground-secondary transition-colors"
             aria-label="Previous Vehicle"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,17 +153,17 @@ export default function PlanYourDrive() {
             </svg>
           </button>
 
-          <span className="text-xs font-mono tracking-widest text-zinc-400">
+          <span className="text-[10px] font-mono tracking-widest text-foreground-muted">
             {String(selectedVehicleIndex + 1).padStart(2, '0')} / {String(vehicles.length).padStart(2, '0')}
           </span>
 
           <button
             onClick={handleNextVehicle}
-            className="w-10 h-10 rounded-full border border-zinc-800 bg-black/40 backdrop-blur-md flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
+            className="w-10 h-10 rounded-full border border-[#1B222B] bg-background/40 backdrop-blur-md flex items-center justify-center text-foreground-muted hover:text-foreground hover:border-foreground-secondary transition-colors"
             aria-label="Next Vehicle"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7-7" />
             </svg>
           </button>
         </div>
@@ -177,22 +177,19 @@ export default function PlanYourDrive() {
           whileInView={{ opacity: 1, x: 0, scale: 1 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-[#0e0f12]/85 border border-zinc-800/80 rounded-2xl p-6 md:p-8 backdrop-blur-xl flex flex-col justify-between shadow-2xl"
+          className="bg-[#0D1117]/85 border border-[#1B222B] rounded-sm p-6 md:p-8 backdrop-blur-xl flex flex-col justify-between shadow-2xl"
         >
           <div>
             <div className="flex items-center space-x-4 mb-8">
-              <div className="w-12 h-12 rounded-full border border-zinc-800 bg-zinc-950/60 flex items-center justify-center shrink-0">
-                <svg className="w-5 h-5 text-[#d4af37]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-10 h-10 rounded-full border border-accent/30 bg-accent/10 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.2} d="M9 7h6m-6 4h6m-6 4h6M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-xs font-mono tracking-[0.2em] uppercase text-zinc-200 font-medium">
+                <h3 className="text-[10px] font-mono tracking-[0.2em] uppercase text-foreground font-medium">
                   FINANCE CALCULATOR
                 </h3>
-                <p className="text-xs text-zinc-400 font-light mt-0.5">
-                  Customize your financing and see real-time monthly payment estimates.
-                </p>
               </div>
             </div>
 
