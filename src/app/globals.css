@@ -1,19 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  /* ── Obsidian + Electric Blue Design System ── */
+  /* ── Obsidian + Champagne Design System ── */
   --background: #080A0D;
   --background-secondary: #0D1117;
   --graphite: #151A21;
   --surface-elevated: #1B222B;
 
-  --foreground: #F1F5F8;
-  --foreground-secondary: #9AA5B1;
-  --foreground-muted: #5E6874;
+  --foreground: #F5F3EF;
+  --foreground-secondary: #A8A29E;
+  --foreground-muted: #6B6560;
 
-  --accent: #4DA3FF;
-  --accent-bright: #8CC8FF;
-  --accent-deep: #163A5C;
+  /* Champagne accent (primary) */
+  --accent: #C9B99A;
+  --accent-bright: #E2D5BF;
+  --accent-deep: #3D3628;
+
+  /* Electric blue (interactive only) */
+  --interactive: #4DA3FF;
+  --interactive-bright: #8CC8FF;
 
   --border: #1B222B;
   --border-strong: #2A3441;
@@ -37,6 +42,9 @@
   --color-accent: var(--accent);
   --color-accent-bright: var(--accent-bright);
   --color-accent-deep: var(--accent-deep);
+
+  --color-interactive: var(--interactive);
+  --color-interactive-bright: var(--interactive-bright);
 
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
