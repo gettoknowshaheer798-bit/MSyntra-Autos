@@ -26,7 +26,7 @@ export default function FinalCTASection() {
       </motion.div>
 
       {/* Subtle blue atmospheric lighting */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(77,163,255,0.15),transparent_60%)] pointer-events-none z-[1]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,rgba(77,163,255,0.05),transparent_60%)] pointer-events-none z-[1]" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center pt-32">
         <motion.div

@@ -41,7 +41,7 @@ export default function VehicleHero() {
       </motion.div>
 
       {/* Subtle blue atmospheric glow behind vehicle */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[50%] bg-[radial-gradient(ellipse_at_center,rgba(77,163,255,0.06),transparent_70%)] pointer-events-none z-[1]" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[50%] bg-[radial-gradient(ellipse_at_center,rgba(77,163,255,0.03),transparent_70%)] pointer-events-none z-[1]" />
 
       {/* Content Layer */}
       <div className="relative z-10 flex h-full flex-col justify-between px-6 md:px-14 py-8">
@@ -78,7 +78,7 @@ export default function VehicleHero() {
                   transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
                   className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extralight tracking-[0.15em] uppercase text-foreground leading-[0.95]"
                 >
-                  THE FUTURE
+                  THE ART
                   <br />
                   <span className="font-light">OF MOTION.</span>
                 </motion.h1>

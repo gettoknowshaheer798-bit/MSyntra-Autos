@@ -1,14 +1,19 @@
 "use client";
 
+import { vehicles } from "@/data/vehicles";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { useRef } from "react";
 
+const m8 = vehicles.find(v => v.id === "bmw-m8-gran-coupe");
+const powerSpecValue = m8?.powerSpec.replace(/\D/g, '') || "617";
+const engineSpecValue = m8?.engineSpec.split(' ')[0] || "4.4L";
+
 const specs = [
-  { value: "617", unit: "HP", label: "HORSEPOWER" },
+  { value: powerSpecValue, unit: "HP", label: "HORSEPOWER" },
   { value: "3.2", unit: "SEC", label: "0—100 KM/H" },
   { value: "305", unit: "KM/H", label: "TOP SPEED" },
-  { value: "4.4L", unit: "V8", label: "TWIN-TURBO" },
+  { value: engineSpecValue, unit: "V8", label: "TWIN-TURBO" },
 ];
 
 export default function PerformanceSection() {

@@ -20,7 +20,7 @@ export default function PhilosophySection() {
       className="relative w-full min-h-screen bg-[#080A0D] flex items-center justify-center overflow-hidden py-32 md:py-40"
     >
       {/* Subtle blue ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(77,163,255,0.04),transparent_70%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(77,163,255,0.02),transparent_70%)] pointer-events-none" />
 
       <motion.div
         style={{ y: textY, opacity: textOpacity }}

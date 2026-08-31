@@ -8,7 +8,10 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 
 export default function CollectionSection() {
-  const [activeCarId, setActiveCarId] = useState(vehicles[0].id);
+  const featuredIds = ["laferrari", "bmw-m8-gran-coupe", "bentley-continental-gt", "rolls-royce-ghost"];
+  const featuredVehicles = vehicles.filter(v => featuredIds.includes(v.id));
+
+  const [activeCarId, setActiveCarId] = useState(featuredVehicles[0].id);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
@@ -16,7 +19,7 @@ export default function CollectionSection() {
     offset: ["start end", "end start"],
   });
 
-  const activeCar = vehicles.find((v) => v.id === activeCarId) || vehicles[0];
+  const activeCar = featuredVehicles.find((v) => v.id === activeCarId) || featuredVehicles[0];
   const bgScale = useTransform(scrollYProgress, [0, 1], [1.1, 1]);
 
   return (
@@ -61,7 +64,7 @@ export default function CollectionSection() {
         {/* Vehicle Panels */}
         <div className="flex-1 flex flex-col justify-end mt-16 max-w-7xl mx-auto w-full">
           <div className="flex flex-nowrap overflow-x-auto gap-4 md:gap-8 pb-8 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {vehicles.map((car, idx) => {
+            {featuredVehicles.map((car, idx) => {
               const isActive = car.id === activeCarId;
               
               return (
@@ -123,6 +126,17 @@ export default function CollectionSection() {
               );
             })}
           </div>
+        </div>
+        
+        {/* Full Collection CTA */}
+        <div className="flex justify-center mt-12 mb-8">
+          <Link
+            href="/catalog"
+            className="group inline-flex items-center gap-3 border border-[#1B222B] px-8 py-3.5 text-[10px] tracking-[0.25em] uppercase text-foreground-secondary transition-all duration-300 hover:border-accent hover:text-foreground"
+          >
+            EXPLORE FULL COLLECTION
+            <span className="text-accent transition-transform duration-300 group-hover:translate-x-1">→</span>
+          </Link>
         </div>
       </div>
     </section>

@@ -169,7 +169,7 @@ export function Navbar() {
                   animate={{ scale: 1, opacity: 0.15 }}
                   exit={{ scale: 1.1, opacity: 0 }}
                   transition={{ duration: 1.0, ease: "easeOut" }}
-                  className="pointer-events-none absolute -left-1/4 -top-1/4 h-[150%] w-[150%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(77,163,255,0.12),transparent_60%)] blur-3xl"
+                  className="pointer-events-none absolute -left-1/4 -top-1/4 h-[150%] w-[150%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(77,163,255,0.04),transparent_60%)] blur-3xl"
                 />
 
                 {/* Top Close Bar */}
