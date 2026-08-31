@@ -19,7 +19,7 @@ const statements = [
 
 export default function ExperienceSection() {
   return (
-    <section className="relative w-full bg-[#080A0D] py-32 md:py-48 overflow-hidden">
+    <section className="relative w-full bg-[#080A0D] py-16 md:py-24 overflow-hidden">
       {/* Background accents */}
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(77,163,255,0.03),transparent_70%)]" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(22,58,92,0.05),transparent_70%)]" />

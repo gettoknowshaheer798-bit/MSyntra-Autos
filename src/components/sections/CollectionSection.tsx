@@ -1,138 +1,161 @@
 "use client";
 
 import { vehicles } from "@/data/vehicles";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 export default function CollectionSection() {
   const featuredIds = ["laferrari", "bmw-m8-gran-coupe", "bentley-continental-gt", "rolls-royce-ghost"];
   const featuredVehicles = vehicles.filter(v => featuredIds.includes(v.id));
 
-  const [activeCarId, setActiveCarId] = useState(featuredVehicles[0].id);
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
+  const bgRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const activeCar = featuredVehicles.find((v) => v.id === activeCarId) || featuredVehicles[0];
-  const bgScale = useTransform(scrollYProgress, [0, 1], [1.1, 1]);
+  useGSAP(() => {
+    if (!containerRef.current) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      bgRefs.current.forEach((el, idx) => {
+        if (idx === 0) gsap.to(el, { opacity: 1, duration: 1 });
+      });
+      contentRefs.current.forEach((el, idx) => {
+        if (idx === 0) gsap.to(el, { opacity: 1, duration: 1 });
+      });
+      return;
+    }
+
+    const totalVehicles = featuredVehicles.length;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: `+=${totalVehicles * 100}%`,
+        pin: true,
+        scrub: 1,
+      }
+    });
+
+    // Make the first vehicle visible immediately
+    gsap.set(bgRefs.current[0], { opacity: 1, scale: 1 });
+    gsap.set(contentRefs.current[0], { opacity: 1, y: 0 });
+
+    // Transition through vehicles
+    for (let i = 0; i < totalVehicles - 1; i++) {
+      const currentBg = bgRefs.current[i];
+      const nextBg = bgRefs.current[i + 1];
+      const currentContent = contentRefs.current[i];
+      const nextContent = contentRefs.current[i + 1];
+
+      // Fade out current content & background while fading in the next
+      tl.to(currentContent, {
+        opacity: 0,
+        y: -50,
+        duration: 1,
+        ease: "power2.inOut"
+      }, `step${i}`);
+
+      tl.to(currentBg, {
+        opacity: 0,
+        scale: 1.05,
+        duration: 1.5,
+        ease: "power2.inOut"
+      }, `step${i}`);
+
+      tl.fromTo(nextBg, 
+        { opacity: 0, scale: 0.95 },
+        { opacity: 1, scale: 1, duration: 1.5, ease: "power2.inOut" },
+        `step${i}`
+      );
+
+      tl.fromTo(nextContent,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1, ease: "power2.inOut" },
+        `step${i}+=0.5`
+      );
+    }
+
+  }, { scope: containerRef });
 
   return (
     <section
       ref={containerRef}
-      className="relative w-full min-h-screen bg-[#080A0D] overflow-hidden"
+      className="relative w-full h-screen bg-[#080A0D] overflow-hidden"
     >
-      {/* Background active image */}
-      <motion.div
-        key={activeCar.id}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, ease: "easeInOut" }}
-        className="absolute inset-0 z-0"
-      >
-        <motion.div style={{ scale: bgScale }} className="absolute inset-0 w-full h-full origin-top">
+      {/* Background active images stack */}
+      {featuredVehicles.map((car, idx) => (
+        <div
+          key={`bg-${car.id}`}
+          ref={el => { bgRefs.current[idx] = el; }}
+          className="absolute inset-0 z-0 opacity-0 will-change-transform transform-gpu"
+        >
           <Image
-            src={activeCar.heroImage}
-            alt={activeCar.model}
+            src={car.heroImage}
+            alt={car.model}
             fill
-            className="object-cover object-center opacity-40"
+            className="object-cover object-center opacity-60"
           />
-        </motion.div>
-        {/* Gradients to blend into the background */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#080A0D] via-[#080A0D]/60 to-[#080A0D]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080A0D] via-[#080A0D]/40 to-transparent" />
-      </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#080A0D] via-[#080A0D]/60 to-[#080A0D]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080A0D] via-[#080A0D]/40 to-transparent" />
+        </div>
+      ))}
 
-      <div className="relative z-10 w-full min-h-screen flex flex-col justify-between pt-24 pb-16 px-6 md:px-14">
-        {/* Header */}
+      <div className="relative z-10 w-full h-full flex flex-col justify-between pt-24 pb-12 px-6 md:px-14">
+        {/* Fixed Header */}
         <div className="max-w-7xl mx-auto w-full">
           <span className="text-[10px] tracking-[0.5em] uppercase text-accent block mb-6">
             THE COLLECTION
           </span>
-          <h2 className="text-3xl sm:text-5xl font-extralight tracking-[0.1em] uppercase text-foreground">
-            A CURATED SELECTION OF
-            <br />
-            <span className="text-foreground-secondary">EXCEPTIONAL AUTOMOBILES.</span>
-          </h2>
         </div>
 
-        {/* Vehicle Panels */}
-        <div className="flex-1 flex flex-col justify-end mt-16 max-w-7xl mx-auto w-full">
-          <div className="flex flex-nowrap overflow-x-auto gap-4 md:gap-8 pb-8 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {featuredVehicles.map((car, idx) => {
-              const isActive = car.id === activeCarId;
-              
-              return (
-                <button
-                  key={car.id}
-                  onClick={() => setActiveCarId(car.id)}
-                  className={`group relative flex-shrink-0 flex flex-col text-left transition-all duration-500 overflow-hidden ${
-                    isActive ? "w-[85vw] md:w-[600px] lg:w-[800px]" : "w-[60vw] md:w-[300px] lg:w-[350px] opacity-60 hover:opacity-100"
-                  }`}
+        {/* Vehicle Contents Stack */}
+        <div className="relative flex-1 w-full max-w-7xl mx-auto flex items-end mb-16">
+          {featuredVehicles.map((car, idx) => (
+            <div
+              key={`content-${car.id}`}
+              ref={el => { contentRefs.current[idx] = el; }}
+              className="absolute bottom-0 left-0 w-full flex flex-col md:flex-row md:items-end justify-between opacity-0 will-change-transform"
+            >
+              <div className="max-w-xl">
+                <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-foreground-secondary/70 block mb-4">
+                  0{idx + 1} — {car.make}
+                </span>
+                <h2 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-wide uppercase text-foreground leading-[1.1] mb-6">
+                  {car.model}
+                </h2>
+                <div className="flex flex-wrap gap-4 text-[10px] font-mono tracking-[0.1em] text-foreground-muted uppercase">
+                  <span>{car.engineSpec}</span>
+                  <span>•</span>
+                  <span>{car.powerSpec}</span>
+                  <span>•</span>
+                  <span>{car.price}</span>
+                </div>
+              </div>
+
+              <div className="mt-8 md:mt-0">
+                <Link
+                  href={`/catalog/${car.id}`}
+                  className="group inline-flex items-center gap-3 border border-foreground/20 px-8 py-4 text-[10px] tracking-[0.25em] uppercase text-foreground transition-all duration-500 hover:border-accent hover:bg-accent/5 backdrop-blur-md"
                 >
-                  <div className="relative w-full aspect-[16/9] overflow-hidden border border-[#1B222B]">
-                    <Image
-                      src={car.actionImage || car.heroImage}
-                      alt={car.model}
-                      fill
-                      className={`object-cover transition-transform duration-700 ${isActive ? "scale-100" : "scale-105 group-hover:scale-100"}`}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#080A0D] via-transparent to-transparent opacity-80" />
-                  </div>
-
-                  <div className={`mt-4 transition-all duration-300 ${isActive ? "pl-2" : ""}`}>
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <div className="text-[10px] font-mono tracking-[0.2em] text-foreground-secondary uppercase mb-1">
-                          {car.make}
-                        </div>
-                        <h3 className="text-lg md:text-2xl font-light tracking-wide uppercase text-foreground transition-colors group-hover:text-accent">
-                          {car.model}
-                        </h3>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-sm md:text-base font-mono font-light text-foreground block">
-                          {car.price}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Active vehicle expanded details */}
-                    <motion.div 
-                      initial={false}
-                      animate={{ height: isActive ? "auto" : 0, opacity: isActive ? 1 : 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="flex flex-wrap gap-4 text-[10px] font-mono tracking-[0.1em] text-foreground-muted uppercase pt-3 border-t border-[#1B222B]">
-                        <span>{car.engineSpec}</span>
-                        <span>•</span>
-                        <span>{car.powerSpec}</span>
-                      </div>
-                      
-                      <Link
-                        href={`/catalog/${car.id}`}
-                        className="mt-6 inline-flex items-center gap-3 text-[10px] tracking-[0.2em] uppercase text-accent hover:text-accent-bright transition-colors"
-                      >
-                        EXPLORE VEHICLE <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </motion.div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                  EXPLORE VEHICLE
+                  <ArrowRight className="w-4 h-4 text-accent transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
         
-        {/* Full Collection CTA */}
-        <div className="flex justify-center mt-12 mb-8">
+        {/* Full Collection Fixed CTA */}
+        <div className="flex justify-center max-w-7xl mx-auto w-full">
           <Link
             href="/catalog"
-            className="group inline-flex items-center gap-3 border border-[#1B222B] px-8 py-3.5 text-[10px] tracking-[0.25em] uppercase text-foreground-secondary transition-all duration-300 hover:border-accent hover:text-foreground"
+            className="group inline-flex items-center gap-3 text-[10px] tracking-[0.25em] uppercase text-foreground-secondary transition-all duration-300 hover:text-foreground"
           >
             EXPLORE FULL COLLECTION
             <span className="text-accent transition-transform duration-300 group-hover:translate-x-1">→</span>
